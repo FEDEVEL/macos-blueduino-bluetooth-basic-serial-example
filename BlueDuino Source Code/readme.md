@@ -26,19 +26,19 @@ Install Arduino IDE Editor or setup it up Online and run through browser. Instal
 
 ## Talking To Your MacBook Through Bluetooth
 1. Download the code inside [Xcode Source Code](../Xcode%20Source%20Code) and follow the [instructions](../Xcode%20Source%20Code/readme.md) 
-1. Once you start the Xcode example, then in the IDE console you should see something like:
+1. When you have Arduino IDE open and your BlueDuino is running, then after you start the Xcode example you should see in the IDE console something like:
 
     ```
     OK+CONN
     iOS received:
     ```
-    This means, that our MacBook apllication (which we are running in Xcode) has succesfully connected to our BlueDuino board.
+    This means, that your MacBook apllication (which your are running in the Xcode) has succesfully connected to your BlueDuino board.
 
-2. At this point we can send any messages to our MacBook. Macbook will receive it and then send back. For example, in the serial console write `Hello` and press *SEND*. In the serial console you should see something like this:
+2. At this point you can send any messages from BlueDuino to your MacBook. Macbook will receive them and send back. For example, in the serial console write `Hello` and press *SEND*. In the serial console you should see something like this:
     ```
     iOS received: Hello
     ```
-    If you see it, then you have setup this example correctly.
+    If you see it, then you have setup this example correctly. Now you can continue experimenting with Bluetooth by yourself. Have a fun!
 
 ## Links And Resources
 - [BlueDuino module](https://wiki.aprbrother.com/en/BlueDuino_rev2.html)
