@@ -6,7 +6,7 @@ This way, we can use Arduino IDE console talk directly to the Bluetooth module a
 ## Setup
 ### Hardware
 - 1x BlueDuino module
-- 1x USB cable to connect module to MacBoook (or PC)
+- 1x USB cable to connect module to MacBook (or PC)
 - 1x MacBook (or PC) with Arduino IDE
 
 ### Software
@@ -25,7 +25,7 @@ Install Arduino IDE Editor or setup it up Online and run through browser. Instal
     ```
 
 ## Talking To Your MacBook Through Bluetooth
-1. Download the code inside [Xcode Source Code](../Xcode%20Source%20Code) and follow the [instructions](../Xcode%20Source%20Code/readme.md) 
+1. Download the code inside [Xcode Source Code](../Xcode%20Source%20Code) and follow [instructions](../Xcode%20Source%20Code/readme.md) 
 1. When you have Arduino IDE open and your BlueDuino is running, then after you start the Xcode example you should see in the IDE console something like:
 
     ```
@@ -43,5 +43,5 @@ Install Arduino IDE Editor or setup it up Online and run through browser. Instal
 ## Links And Resources
 - [BlueDuino module](https://wiki.aprbrother.com/en/BlueDuino_rev2.html)
 - [BlueDuino AT commands](https://wiki.aprbrother.com/en/ZeroBeacon.html)
-- Original code download from [here](https://github.com/AprilBrother/BlueDuino-Library/blob/master/examples/hardwareSerialMonitor/hardwareSerialMonitor.ino)
+- Original code downloaded from [here](https://github.com/AprilBrother/BlueDuino-Library/blob/master/examples/hardwareSerialMonitor/hardwareSerialMonitor.ino)
 - The code needed for MacBook is located [here](../Xcode%20Source%20Code)
