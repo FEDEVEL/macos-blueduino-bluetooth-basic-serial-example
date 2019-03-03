@@ -1,7 +1,7 @@
 ## Description
 This code is used to talk to Bluetooth module which is placed on [BlueDuino board](https://wiki.aprbrother.com/en/BlueDuino_rev2.html). It is a very simple code, which "connects" [Arduino IDE](https://www.arduino.cc/en/Main/Software) serial console with Bluetooth module serial port. 
 
-This way, we can use Arduino IDE console talk directly to the Bluetooth module and we can for example use AT comands to setup the Bluetooth module. This way, we can also send / receive text messages through Bluetooth to MacBook and back to BlueDuino (on MacBook you will need to run the code located inside [Xcode Source Code](../xcode_source_code) directory).
+This way, we can use Arduino IDE console talk directly to the Bluetooth module and we can for example use AT comands to setup the Bluetooth module. This way, we can also send / receive text messages through Bluetooth to MacBook and back to BlueDuino (on MacBook you will need to run the code located inside [Xcode Source Code](../Xcode%20Source%20Code) directory).
 
 ## Setup
 ### Hardware
@@ -25,7 +25,7 @@ Install Arduino IDE Editor or setup it up Online and run through browser. Instal
     ```
 
 ## Talking To Your MacBook Through Bluetooth
-1. Download the code inside [Xcode Source Code](../xcode_source_code) and follow the [instructions](../xcode_source_code/readme.md) 
+1. Download the code inside [Xcode Source Code](../Xcode%20Source%20Code) and follow the [instructions](../Xcode%20Source%20Code/readme.md) 
 1. Once you start the Xcode example, then in the IDE console you should see something like:
 
     ```
@@ -44,4 +44,4 @@ Install Arduino IDE Editor or setup it up Online and run through browser. Instal
 - [BlueDuino module](https://wiki.aprbrother.com/en/BlueDuino_rev2.html)
 - [BlueDuino AT commands](https://wiki.aprbrother.com/en/ZeroBeacon.html)
 - Original code download from [here](https://github.com/AprilBrother/BlueDuino-Library/blob/master/examples/hardwareSerialMonitor/hardwareSerialMonitor.ino)
-- The code needed for MacBook is located [here](../xcode_source_code)
+- The code needed for MacBook is located [here](../Xcode%20Source%20Code)
