@@ -1,5 +1,5 @@
 ## Description
-This is a very simple example of Bluetooth code for Xcode. Together with [BlueDuino Source Code](../BlueDuino%20Source%20Code) you can send tex messages between your MacBook and [BlueDuino board](https://wiki.aprbrother.com/en/BlueDuino_rev2.html).
+This is a very simple example of Bluetooth code for Xcode. Together with [BlueDuino Source Code](../BlueDuino%20Source%20Code) you can send text messages between your MacBook and [BlueDuino board](https://wiki.aprbrother.com/en/BlueDuino_rev2.html).
 ## Setup
 ### Hardware
 - 1x BlueDuino module
