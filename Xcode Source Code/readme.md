@@ -48,7 +48,7 @@ You can simply [download this repository](https://github.com/FEDEVEL/macos-blued
     ```swift
     import CoreBluetooth
     ```
-1. Extend *ViewController*. Add this after and of *ViewController* class:
+1. Extend 'ViewController'. Add this after end of the 'ViewController' class:
     ```swift
     extension ViewController: CBCentralManagerDelegate {
         func centralManagerDidUpdateState(_ central: CBCentralManager) {
