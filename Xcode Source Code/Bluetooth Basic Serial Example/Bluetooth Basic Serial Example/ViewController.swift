@@ -13,6 +13,7 @@ import CoreBluetooth
 
 let ourBLEPeripheral_UUID = "A9A176ED-39B8-4C80-BDE6-6B28AE836290" //BlueDuino
 var blePeripheral : CBPeripheral?
+var bleTX : CBCharacteristic?
 
 class ViewController: NSViewController {
     
@@ -87,7 +88,47 @@ extension ViewController: CBPeripheralDelegate {
         
         for characteristic in characteristics {
             print(characteristic)
+            peripheral.readValue(for: characteristic)
+            peripheral.setNotifyValue(true, for: characteristic)
+            
+            if characteristic.uuid == CBUUID(string: "FFF2") {
+                bleTX = characteristic
+            }
         }
+    }
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic,
+                    error: Error?) {
+        
+        switch characteristic.uuid {
+        case CBUUID(string: "FFF1"):
+            print("Characteristic UUID: FFF1 ... Received")
+            let received = dataReceived(from: characteristic)
+            print(received)
+            writeData(characteristic: bleTX!, message: received)
+        default:
+            print("Unhandled Characteristic UUID: \(characteristic.uuid)")
+        }
+    }
+    func dataReceived(from characteristic: CBCharacteristic) -> String {
+        guard let characteristicData = characteristic.value else { return "" }
+        
+        let byteArray = [UInt8](characteristicData)
+    
+        if let string = String(bytes: byteArray, encoding: .utf8) {
+            return(string)
+        }
+        else{
+            return("Empty or not a string?")
+        }
+    }
+    private func writeData(characteristic: CBCharacteristic, message: String) {
+        
+        print("Sending back: \(message)")
+        
+        let msg_string = "MacBook: \(message)\n"
+        let msg = msg_string.data(using: String.Encoding.utf8)
+        
+        blePeripheral?.writeValue(msg!, for: characteristic, type: .withResponse)
     }
 }
 

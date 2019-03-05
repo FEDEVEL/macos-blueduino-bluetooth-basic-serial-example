@@ -2,37 +2,37 @@
 ## Setup
 ### Hardware
 ### Software
-File -> New -> Project
-macOS
-Cocoa App
-Next
+### STEP-BY-STEP writing, running and testing this example
+1. Start a new project in xCode: 
+    1. File -> New -> Project
+    1. Select: macOS
+    1. Select: Cocoa App
+    1. Click Next
+    1. Product name: Bluetooth Basic Serial Example
+    1. Select team: e.g you can use your account
+    1. Organization name: YOUR_ORGANIZATION
+    1. Organization identifier: com.your_organization
+    1. Language: Swift
+    1. Use Story Boards: checked
+    1. Create document based application: not checked
+    1. Use core data: not checked
+    1. Include Unit Testes: not checked
+    1. Include UI Tests: not checked
+    1. Next
+    1. Select location
+    1. Next
 
-Product name: Bluetooth Basic Serial Example
-Select team: e.g you can use your account
-organization name: FEDEVEL
-Organization identifier: com.fedevel
-Language: Swift
-Use Story Boards: checked
-Create document based application: not checked
-Use core data: not checked
-Include Unit Testes: not checked
-Include UI Tests: not checked
-Next
+1. Hit Play button to test the code
 
-Select location
-Next
+    You may see: *codesign wants to access key "access" in your keychaing*. Write your MacBook user password and hit *Always Allow* button.
 
-Hit Play button to test the code
+    You may see: *[default] Unable to load Info.plist exceptions (eGPUOverrides)*, you can igore it. You should see empty window.
 
-You may see: codesign wants to access key "access" in your keychaing. Write your MacBook user password and hit Always Allow button
+    Click on Capabilities TAB (when the top project is selected). Sandbox should be *ON*, check *Bluetooth* (we will be using bluetooth, so we need to enable access to it).
 
-You may see: [default] Unable to load Info.plist exceptions (eGPUOverrides), you can igore it. You should see empty window.
+1. Double click on ViewController.swift, here will be everything happening.
 
-Click on Capabilities TAB (when top project is selected). Sandbox should be on, check Bluetooth (we will be using bluetooth, so we need to enable access to it)
-
-Double click on ViewController.swift, here will be everything happening.
-
-Based on tutorial at https://www.raywenderlich.com/231-core-bluetooth-tutorial-for-ios-heart-rate-monitor
+    The next steps are based on tutorial at https://www.raywenderlich.com/231-core-bluetooth-tutorial-for-ios-heart-rate-monitor
 
 1. Import the Core Bluetooth framework. Add following at the beginning of the file:
     ```
@@ -209,6 +209,144 @@ Based on tutorial at https://www.raywenderlich.com/231-core-bluetooth-tutorial-f
     <CBCharacteristic: 0x60000260fc00, UUID = FFF1, properties = 0x10, value = (null), notifying = NO>
     <CBCharacteristic: 0x60000260fc60, UUID = FFF2, properties = 0xC, value = (null), notifying = NO>
     ```   
+    What we are interested about are FFF1 anf FFF2 Characteristics. These can be used to send and receive messegas between MacBook and BlueDuino.
+1. We need to access the values of the characteristics. Add following code into `extension ViewController: CBPeripheralDelegate {`:
+
+    ```
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic,
+                    error: Error?) {
+        
+        switch characteristic.uuid {
+        case CBUUID(string: "FFF1"):
+            print("Received")
+        default:
+            print("Unhandled Characteristic UUID: \(characteristic.uuid)")
+        }
+    }
+    ```
+    Now modify `for characteristic in characteristics {` and add `peripheral.readValue(for: characteristic)`. It will look like this:   
+    ```
+    for characteristic in characteristics {
+        print(characteristic)
+        peripheral.readValue(for: characteristic)
+    }
+    ```
+    Build and run the code. You should see some new info in the console, something like this:
+    ```
+    Characteristic UUID: FFF1 ... Received
+    Unhandled Characteristic UUID: FFF2
+    Unhandled Characteristic UUID: System ID
+    Unhandled Characteristic UUID: Model Number String
+    Unhandled Characteristic UUID: Serial Number String
+    Unhandled Characteristic UUID: Firmware Revision String
+    Unhandled Characteristic UUID: Hardware Revision String
+    Unhandled Characteristic UUID: Software Revision String
+    Unhandled Characteristic UUID: Manufacturer Name String
+    Unhandled Characteristic UUID: IEEE Regulatory Certification
+    Unhandled Characteristic UUID: PnP ID
+    ```
+    Perfect. We are able to read values of characteristics.        
+1. To see what we have received from BlueDuino, add this code `peripheral.setNotifyValue(true, for: characteristic)` into `for characteristic in characteristics {`. The code will now look like this:
+    ```
+    for characteristic in characteristics {
+        print(characteristic)
+        peripheral.readValue(for: characteristic)
+        peripheral.setNotifyValue(true, for: characteristic)
+    }
+    ```
+    Build and run the code. Then, go into IDE console and write a message for example *Hello*. Every time, when you press *SEND*, in the Xcode console you should see *Characteristic UUID: FFF1 ... Received*.
+1. To see what we have received, we need to decode the value. Into `extension ViewController: CBPeripheralDelegate {` add following code:
+    ```
+    func dataReceived(from characteristic: CBCharacteristic) -> String {
+        guard let characteristicData = characteristic.value else { return "" }
+        
+        let byteArray = [UInt8](characteristicData)
+    
+        if let string = String(bytes: byteArray, encoding: .utf8) {
+            return(string)
+        }
+        else{
+            return("")
+        }
+    }
+    ```
+    Modify also `switch characteristic.uuid {` . Add `let received = dataReceived(from: characteristic)` and also `print(received)`. It will look now like this:
+    ```
+    switch characteristic.uuid {
+    case CBUUID(string: "FFF1"):
+        print("Characteristic UUID: FFF1 ... Received")
+        let received = dataReceived(from: characteristic)
+        print(received)
+    default:
+        print("Unhandled Characteristic UUID: \(characteristic.uuid)")
+    }
+    ```
+    Build and run your code. Go to IDE serial console, write *Hello* and press *SEND*. In xCode console you should see something like:
+    ```
+    Characteristic UUID: FFF1 ... Received
+    Hello
+    ```
+    Perfect, we can receive messages from our BlueDuino. Now, only what we would like to know how to send a message from MacBook.
+1. To send a message from MacBook through Bluetooth to your BlueDuino add into `extension ViewController: CBPeripheralDelegate {` the following code:
+    ```
+    private func writeData(characteristic: CBCharacteristic, message: String) {
+        
+        print("Sending back: \(message)")
+        
+        let msg_string = "MacBook: \(message)\n"
+        let msg = msg_string.data(using: String.Encoding.utf8)
+        
+        blePeripheral?.writeValue(msg!, for: characteristic, type: .withResponse)
+    }
+    ```
+    Now, at the begining of your code add `var bleTX : CBCharacteristic?`. It will look like:
+    ```
+    import Cocoa
+    import CoreBluetooth
+
+    let ourBLEPeripheral_UUID = "A9A176ED-39B8-4C80-BDE6-6B28AE836290" //BlueDuino
+    var blePeripheral : CBPeripheral?
+    var bleTX : CBCharacteristic?
+    ```
+    We also need to store the characteristic for sending data. Inside `for characteristic in characteristics {` add `if characteristic.uuid == CBUUID(string: "FFF2") {` statement. It will look like this:
+    ```
+    for characteristic in characteristics {
+        print(characteristic)
+        peripheral.readValue(for: characteristic)
+        peripheral.setNotifyValue(true, for: characteristic)
+        
+        if characteristic.uuid == CBUUID(string: "FFF2") {
+            bleTX = characteristic
+        }
+    }
+    ``` 
+    Always when we receive something, we will send it back. So, into `switch characteristic.uuid {` add `writeData(characteristic: bleTX!, message: received)`. It will look like this:
+    ```
+    switch characteristic.uuid {
+        case CBUUID(string: "FFF1"):
+            print("Characteristic UUID: FFF1 ... Received")
+            let received = dataReceived(from: characteristic)
+            print(received)
+            writeData(characteristic: bleTX!, message: received)
+        default:
+            print("Unhandled Characteristic UUID: \(characteristic.uuid)")
+    }
+    ```
+1. Ready! Build our code and run it. Go into IDE console, write *Hello* and press *SEND*. You immedaitelly should see answer in the IDE console. Something like this:
+    ```
+    Hello BlueDuino!
+    OK+CONN
+    MacBook: 
+    MacBook: Hello
+    ``` 
+    The message *Macbook: Hello* was sent from your MacBook over Bluetooth to your BlueDuino. If you go into Xcode console, you should see something like this:
+    ```
+    Characteristic UUID: FFF1 ... Received
+    Hello
+
+    Sending back: Hello
+    ```
+**IMPORTANT! There may be limits for maximum number of characters to send / receive. Initially only try to sent short messages. If you try to send too long message, the communication may get stuck (re-run the Xcode app or disconnect and connect USB calble with your BluDuino)**
 
 ## Running The Code
 ## Links And Resources
