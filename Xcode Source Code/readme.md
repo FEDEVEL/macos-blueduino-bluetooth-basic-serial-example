@@ -1,45 +1,55 @@
 ## Description
+This is a very simple example of Bluetooth code for Xcode. Together with [BlueDuino Source Code](../BlueDuino%20Source%20Code) you can send tex messages between your MacBook and [BlueDuino board](https://wiki.aprbrother.com/en/BlueDuino_rev2.html).
 ## Setup
 ### Hardware
+- 1x BlueDuino module
+- 1x USB cable to connect module to MacBook (or PC)
+- 1x MacBook (or PC) with Arduino IDE
 ### Software
-### STEP-BY-STEP writing, running and testing this example
-1. Start a new project in xCode: 
-    1. File -> New -> Project
-    1. Select: macOS
-    1. Select: Cocoa App
-    1. Click Next
-    1. Product name: Bluetooth Basic Serial Example
-    1. Select team: e.g you can use your account
-    1. Organization name: YOUR_ORGANIZATION
-    1. Organization identifier: com.your_organization
-    1. Language: Swift
-    1. Use Story Boards: checked
-    1. Create document based application: not checked
-    1. Use core data: not checked
-    1. Include Unit Testes: not checked
-    1. Include UI Tests: not checked
-    1. Next
-    1. Select location
-    1. Next
+- Xcode
+## How To Run This Code
+You can simply [download this repository](https://github.com/FEDEVEL/macos-blueduino-bluetooth-basic-serial-example/archive/master.zip) and run the code or you can follow the next chapter to create everything by yourself.
+## STEP-BY-STEP writing, running and testing this example
+1. Start a new project in xCode. 
+    - Do following:
+        1. File -> New -> Project
+        1. Select: macOS
+        1. Select: Cocoa App
+        1. Click Next
+     - Then, fill up the info:   
+        1. Product name: Bluetooth Basic Serial Example
+        1. Select team: e.g you can use your account
+        1. Organization name: YOUR_ORGANIZATION
+        1. Organization identifier: com.your_organization
+        1. Language: Swift
+        1. Use Story Boards: checked
+        1. Create document based application: not checked
+        1. Use core data: not checked
+        1. Include Unit Testes: not checked
+        1. Include UI Tests: not checked
+        1. Next
+     - Select where you would like to save your project   
+        1. Select location
+        1. Next
 
-1. Hit Play button to test the code
+1. Hit *Play* button to test the code.
 
-    You may see: *codesign wants to access key "access" in your keychaing*. Write your MacBook user password and hit *Always Allow* button.
+    :bulb: You may see: *codesign wants to access key "access" in your keychaing*. Write your MacBook user password and hit *Always Allow* button.
 
-    You may see: *[default] Unable to load Info.plist exceptions (eGPUOverrides)*, you can igore it. You should see empty window.
+    :bulb: You may see: *[default] Unable to load Info.plist exceptions (eGPUOverrides)*, you can igore it. You should see empty window.
 
-    Click on Capabilities TAB (when the top project is selected). Sandbox should be *ON*, check *Bluetooth* (we will be using bluetooth, so we need to enable access to it).
+1. Click on Capabilities TAB (when the top project is selected). Sandbox should be *ON*, check *Bluetooth* (we will be using bluetooth, so we need to enable access to it).
 
-1. Double click on ViewController.swift, here will be everything happening.
+1. Double click on *ViewController.swift*, here will be everything happening.
 
     The next steps are based on tutorial at https://www.raywenderlich.com/231-core-bluetooth-tutorial-for-ios-heart-rate-monitor
 
 1. Import the Core Bluetooth framework. Add following at the beginning of the file:
-    ```
+    ```swift
     import CoreBluetooth
     ```
-1. Extend ViewController. Add this after and of ViewController class:
-    ```
+1. Extend *ViewController*. Add this after and of *ViewController* class:
+    ```swift
     extension ViewController: CBCentralManagerDelegate {
         func centralManagerDidUpdateState(_ central: CBCentralManager) {
             switch central.state {
@@ -60,11 +70,11 @@
     }
     ```
 1. Add this after `class ViewController: NSViewController {`
-    ```
+    ```swift
     var centralManager: CBCentralManager!
     ```
 1. Add this inside `viewDidLoad()`
-    ```
+    ```swift
     centralManager = CBCentralManager(delegate: self, queue: nil)
     ```
 1. Switch on Bluetooth on your MacBook
@@ -72,22 +82,22 @@
     ```
     central.state is .poweredOn
     ```
-    Note: If you are testing this with iOS, you HAVE TO connect a real device (iPhone / iPad). Otherwise you may be getting *XPC connection invalid* error.
+    :bulb: Note: If you are testing this with iOS, you HAVE TO connect a real device (iPhone / iPad). Otherwise you may be getting *XPC connection invalid* error.
 1. We are going to scan for bluetooth devices around your MacBook. Add `centralManager.scanForPeripherals(withServices: nil)` into  `case .poweredOn`:
-    ```
+    ```swift
     case .poweredOn:
-    print("central.state is .poweredOn")
-    centralManager.scanForPeripherals(withServices: nil)
+        print("central.state is .poweredOn")
+        centralManager.scanForPeripherals(withServices: nil)
     }
     ```
     We would like to see what has been found. Add this function into `extension ViewController: CBCentralManagerDelegate {` to print all devices around:
-    ```
+    ```swift
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
                         advertisementData: [String: Any], rssi RSSI: NSNumber) {
         print(peripheral)
     }
     ```
-    You can see something like this:
+    Build and run your code. In the Xcode console, you whould see something like this:
     ```
     central.state is .poweredOn
     <CBPeripheral: 0x600003504580, identifier = 0933D848-E7A2-4AC1-9F6B-9451C5A66006, name = (null), state = disconnected>
@@ -97,15 +107,15 @@
     <CBPeripheral: 0x600003501a20, identifier = 0090D2CB-3310-49FD-83BE-87573317C480, name = (null), state = disconnected>
     <CBPeripheral: 0x600003501a20, identifier = 0090D2CB-3310-49FD-83BE-87573317C480, name = (null), state = disconnected>
     ```
-    Notice our BlueDuine device - it is the bluetooth peripheral with *name = ZeroBeacon*. This is the peripheral which we would like to work with.
+    Notice our BlueDuino device - it is the Bluetooth peripheral with *name = ZeroBeacon*. This is the peripheral which we would like to work with.
 1. Add this at the beginning of the file:
-    ```
+    ```swift
     let ourBLEPeripheral_UUID = "A9A176ED-39B8-4C80-BDE6-6B28AE836290" //BlueDuino
     ```
-    **You need to use UUID of your BlueDuino board. It is important you update the number!** You will find the number in the console output.
+    :bulb: **You may need to use UUID of your BlueDuino board. Check if you do not need to update the number!** You will find the number in your console output.
     
     Update `func centralManager`:
-    ```
+    ```swift
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
                         advertisementData: [String: Any], rssi RSSI: NSNumber) {
         print(peripheral)
@@ -115,9 +125,9 @@
         }
     }
     ```
-    Build and Run you application. Check out the console output. After ZeroBeacon is discovered, you should see a message *Found!* At this point, we have our BlueDuino.
+    Build and run you application. Check out the console output. After ZeroBeacon is discovered, you should see a message *Found!* At this point, we have found our BlueDuino.
 1. Now, we would like to connect to our board. Let's do it. Add `var blePeripheral : CBPeripheral?` to the beginning of the file. It should now look like this:
-    ```
+    ```swift
     import Cocoa
     import CoreBluetooth
 
@@ -127,7 +137,7 @@
     class ViewController: NSViewController {
     ```
     Modify `if peripheral.identifier.uuidString == ourBLEPeripheral_UUID` into following:
-    ```
+    ```swift
     if peripheral.identifier.uuidString == ourBLEPeripheral_UUID
     {
         print("Found!")
@@ -136,14 +146,14 @@
     }
     ```
     Add also new function into `extension ViewController: CBCentralManagerDelegate {`:
-    ```
+    ```swift
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         print("I am connected!")
     }
     ```
     Build and run your application. In the Xcode console, you should see *I am connected!* Also, in the IDE console you should see *OK+CONN*
-1. We are now connected to our BlueDuino board. We are going to discover services which we can use with the board. Add this on the end of the file:
-    ```
+1. We are now connected to our BlueDuino board. We are going to discover services which we can use with the board. Add this at the end of the file:
+    ```swift
     extension ViewController: CBPeripheralDelegate {
         func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
             guard let services = peripheral.services else { return }
@@ -154,15 +164,15 @@
         }
     }
     ```
-    Modify `func centralManager`
-    ```
+    Modify `func centralManager`, add `blePeripheral?.discoverServices(nil)`. It should look now like this:
+    ```swift
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         print("I am connected!")
         blePeripheral?.discoverServices(nil)
     }
     ```
     Also add `blePeripheral?.delegate = self` into `if peripheral.identifier.uuidString == kBLEService_UUID`
-    ```
+    ```swift
     if peripheral.identifier.uuidString == ourBLEPeripheral_UUID
     {
         print("Found!")
@@ -172,7 +182,7 @@
     }
     ```
 1. Finally, we are going to have a look at characteristics of our service. Into `extension ViewController: CBPeripheralDelegate {` add:
-    ```
+    ```swift
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService,
                     error: Error?) {
         guard let characteristics = service.characteristics else { return }
@@ -183,14 +193,14 @@
     }
 
     ```   
-    Add `peripheral.discoverCharacteristics(nil, for: service)` into:
-    ```
+    Add `peripheral.discoverCharacteristics(nil, for: service)` into `for service in services {`:
+    ```swift
     for service in services {
         print(service)
         peripheral.discoverCharacteristics(nil, for: service)
     }
     ```
-    Now, in the Xcode console you should see something like:
+    Build and run. Now, in the Xcode console you should see something like:
     ```
     <CBPeripheral: 0x600003505ad0, identifier = A9A176ED-39B8-4C80-BDE6-6B28AE836290, name = ZeroBeacon, state = connecting>
     Found!
@@ -209,10 +219,10 @@
     <CBCharacteristic: 0x60000260fc00, UUID = FFF1, properties = 0x10, value = (null), notifying = NO>
     <CBCharacteristic: 0x60000260fc60, UUID = FFF2, properties = 0xC, value = (null), notifying = NO>
     ```   
-    What we are interested about are FFF1 anf FFF2 Characteristics. These can be used to send and receive messegas between MacBook and BlueDuino.
+    What we are interested about [FFF1 anf FFF2 Characteristics](https://wiki.aprbrother.com/en/ZeroBeacon.html). These can be used to send and receive messages between MacBook and BlueDuino.
 1. We need to access the values of the characteristics. Add following code into `extension ViewController: CBPeripheralDelegate {`:
 
-    ```
+    ```swift
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic,
                     error: Error?) {
         
@@ -225,7 +235,7 @@
     }
     ```
     Now modify `for characteristic in characteristics {` and add `peripheral.readValue(for: characteristic)`. It will look like this:   
-    ```
+    ```swift
     for characteristic in characteristics {
         print(characteristic)
         peripheral.readValue(for: characteristic)
@@ -247,16 +257,16 @@
     ```
     Perfect. We are able to read values of characteristics.        
 1. To see what we have received from BlueDuino, add this code `peripheral.setNotifyValue(true, for: characteristic)` into `for characteristic in characteristics {`. The code will now look like this:
-    ```
+    ```swift
     for characteristic in characteristics {
         print(characteristic)
         peripheral.readValue(for: characteristic)
         peripheral.setNotifyValue(true, for: characteristic)
     }
     ```
-    Build and run the code. Then, go into IDE console and write a message for example *Hello*. Every time, when you press *SEND*, in the Xcode console you should see *Characteristic UUID: FFF1 ... Received*.
+    Build and run the code. Then, go into IDE console and write a message for example *Hello*. Every time, when you press *SEND* in the IDE console, you will see in the Xcode console something like *Characteristic UUID: FFF1 ... Received*.
 1. To see what we have received, we need to decode the value. Into `extension ViewController: CBPeripheralDelegate {` add following code:
-    ```
+    ```swift
     func dataReceived(from characteristic: CBCharacteristic) -> String {
         guard let characteristicData = characteristic.value else { return "" }
         
@@ -271,7 +281,7 @@
     }
     ```
     Modify also `switch characteristic.uuid {` . Add `let received = dataReceived(from: characteristic)` and also `print(received)`. It will look now like this:
-    ```
+    ```swift
     switch characteristic.uuid {
     case CBUUID(string: "FFF1"):
         print("Characteristic UUID: FFF1 ... Received")
@@ -281,14 +291,14 @@
         print("Unhandled Characteristic UUID: \(characteristic.uuid)")
     }
     ```
-    Build and run your code. Go to IDE serial console, write *Hello* and press *SEND*. In xCode console you should see something like:
+    Build and run your code. Go to IDE serial console, write *Hello* and press *SEND*. In Xcode console you should see something like:
     ```
     Characteristic UUID: FFF1 ... Received
     Hello
     ```
-    Perfect, we can receive messages from our BlueDuino. Now, only what we would like to know how to send a message from MacBook.
+    Perfect, we can receive messages from our BlueDuino. Now, only what we would like to know is how to send a message from MacBook.
 1. To send a message from MacBook through Bluetooth to your BlueDuino add into `extension ViewController: CBPeripheralDelegate {` the following code:
-    ```
+    ```swift
     private func writeData(characteristic: CBCharacteristic, message: String) {
         
         print("Sending back: \(message)")
@@ -300,7 +310,7 @@
     }
     ```
     Now, at the begining of your code add `var bleTX : CBCharacteristic?`. It will look like:
-    ```
+    ```swift
     import Cocoa
     import CoreBluetooth
 
@@ -309,7 +319,7 @@
     var bleTX : CBCharacteristic?
     ```
     We also need to store the characteristic for sending data. Inside `for characteristic in characteristics {` add `if characteristic.uuid == CBUUID(string: "FFF2") {` statement. It will look like this:
-    ```
+    ```swift
     for characteristic in characteristics {
         print(characteristic)
         peripheral.readValue(for: characteristic)
@@ -321,7 +331,7 @@
     }
     ``` 
     Always when we receive something, we will send it back. So, into `switch characteristic.uuid {` add `writeData(characteristic: bleTX!, message: received)`. It will look like this:
-    ```
+    ```swift
     switch characteristic.uuid {
         case CBUUID(string: "FFF1"):
             print("Characteristic UUID: FFF1 ... Received")
@@ -332,21 +342,20 @@
             print("Unhandled Characteristic UUID: \(characteristic.uuid)")
     }
     ```
-1. Ready! Build our code and run it. Go into IDE console, write *Hello* and press *SEND*. You immedaitelly should see answer in the IDE console. Something like this:
+1. Ready! Build your code and run it. Go into IDE console, write *Hello* and press *SEND*. You immedaitelly should see answer in the IDE console. Something like this:
     ```
     Hello BlueDuino!
     OK+CONN
     MacBook: 
     MacBook: Hello
     ``` 
-    The message *Macbook: Hello* was sent from your MacBook over Bluetooth to your BlueDuino. If you go into Xcode console, you should see something like this:
+    The message *MacBook: Hello* was sent from your MacBook over Bluetooth to your BlueDuino. If you go into Xcode console, you should see something like this:
     ```
     Characteristic UUID: FFF1 ... Received
     Hello
 
     Sending back: Hello
     ```
-**IMPORTANT! There may be limits for maximum number of characters to send / receive. Initially only try to sent short messages. If you try to send too long message, the communication may get stuck (re-run the Xcode app or disconnect and connect USB calble with your BluDuino)**
+> :exclamation: **IMPORTANT! There may be limits for maximum number of characters to send / receive. Initially only try to send short messages. If you try to send too long message, the communication may get stuck (if that happen, just re-run the Xcode app or disconnect and connect USB cable with your BlueDuino).**
 
-## Running The Code
-## Links And Resources
+I hope you found this useful.
