@@ -32,13 +32,13 @@ You can simply [download this repository](https://github.com/FEDEVEL/macos-blued
         1. Select location
         1. Next
 
-1. Hit *Play* button to test the code.
+1. Hit *Play* button to test the code. You should see an empty window.
 
     :bulb: You may see: *codesign wants to access key "access" in your keychaing*. Write your MacBook user password and hit *Always Allow* button.
 
-    :bulb: You may see: *[default] Unable to load Info.plist exceptions (eGPUOverrides)*, you can igore it. You should see empty window.
+    :bulb: You may see: *[default] Unable to load Info.plist exceptions (eGPUOverrides)*, you can igore it.
 
-1. Click on Capabilities TAB (when the top project is selected). Sandbox should be *ON*, check *Bluetooth* (we will be using bluetooth, so we need to enable access to it).
+1. Click on Capabilities TAB (when the top project is selected). Sandbox should be switched *ON*, also ***Check* the *Bluetooth* checkbox** (we will be using bluetooth, so we need to enable access to it).
 
 1. Double click on *ViewController.swift*, here will be everything happening.
 
